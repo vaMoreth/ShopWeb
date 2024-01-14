@@ -53,7 +53,7 @@ namespace ShopWeb.Controllers
                 return NotFound();
             }
 
-            return View();
+            return View(categoryFromDb);
         }
         [HttpPost]
         public IActionResult Edit(Category obj)
