@@ -5,7 +5,7 @@ VisualStudioVersion = 17.7.34202.233
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShopWeb", "ShopWeb\ShopWeb.csproj", "{A019E4A2-4BFA-4C7B-A181-B5E7DD443D8C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShopWeb_Temp", "ShopWeb_Temp\ShopWeb_Temp.csproj", "{B2AFE310-387B-4DC5-99ED-1E420429B048}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShopWeb_Temp", "ShopWeb_Temp\ShopWeb_Temp.csproj", "{B2AFE310-387B-4DC5-99ED-1E420429B048}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
