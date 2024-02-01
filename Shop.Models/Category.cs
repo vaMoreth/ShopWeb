@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace ShopWeb.Models
+namespace Shop.Models
 {
     public class Category
     {
@@ -12,8 +12,7 @@ namespace ShopWeb.Models
         [MaxLength(30)]
         public string Name { get; set; }
         [DisplayName("Display Order")]
-        [Range(1,100)]
+        [Range(1, 100)]
         public int DisplayOrder { get; set; }
-
     }
 }

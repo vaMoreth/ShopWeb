@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ShopWeb.Data;
-using ShopWeb.Models;
+using Shop.DataAcess.Data;
+using Shop.Models;
 
 namespace ShopWeb.Controllers
 {
