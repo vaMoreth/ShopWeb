@@ -7,7 +7,7 @@ using Shop.DataAcess.Data;
 
 #nullable disable
 
-namespace Shop.DataAcess.Migrations
+namespace Shop.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -16,12 +16,12 @@ namespace Shop.DataAcess.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.14")
+                .HasAnnotation("ProductVersion", "7.0.15")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ShopWeb.Models.Category", b =>
+            modelBuilder.Entity("Shop.Models.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -34,7 +34,8 @@ namespace Shop.DataAcess.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.HasKey("Id");
 
