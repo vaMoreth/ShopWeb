@@ -19,7 +19,7 @@ namespace ShopWeb.Areas.Admin.Controllers
             return View(objCategoryList);
         }
 
-        //Create Page
+        #region GetAll
 
         public IActionResult Create()
         {
@@ -42,7 +42,9 @@ namespace ShopWeb.Areas.Admin.Controllers
             return View(obj);
         }
 
-        // Edit Page
+        #endregion
+
+        #region Update
 
         public IActionResult Edit(int? id)
         {
@@ -71,7 +73,9 @@ namespace ShopWeb.Areas.Admin.Controllers
             return View(obj);
         }
 
-        //Delete
+        #endregion
+
+        #region Delete
 
         public IActionResult Delete(int? id)
         {
@@ -100,5 +104,7 @@ namespace ShopWeb.Areas.Admin.Controllers
             TempData["success"] = "Category deleted successfully";
             return RedirectToAction("Index", "Category");
         }
+
+        #endregion
     }
 }

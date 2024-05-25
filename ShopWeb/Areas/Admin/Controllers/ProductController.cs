@@ -24,7 +24,7 @@ namespace ShopWeb.Areas.Admin.Controllers
             return View(objProductList);
         }
 
-        //Create Page
+        #region Upsert
 
         public IActionResult Upsert(int? id)
         {
@@ -104,42 +104,19 @@ namespace ShopWeb.Areas.Admin.Controllers
             }
         }
 
-        //Old Delete
-        //public IActionResult Delete(int? id)
-        //{
-        //    if (id == null || id == 0)
-        //    {
-        //        return NotFound();
-        //    }
-        //    Product? productFromDb = _unitOfWork.Product.Get(u => u.Id == id);
-        //    if (productFromDb == null)
-        //    {
-        //        return NotFound();
-        //    }
+        #endregion
 
-        //    return View(productFromDb);
-        //}
-        //[HttpPost, ActionName("Delete")]
-        //public IActionResult DeletePOST(int? id)
-        //{
-        //    Product? obj = _unitOfWork.Product.Get(u => u.Id == id);
-        //    if (obj == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    _unitOfWork.Product.Remove(obj);
-        //    _unitOfWork.Save();
-        //    TempData["success"] = "Product deleted successfully";
-        //    return RedirectToAction("Index", "Product");
-        //}
-
-        #region API CALLS
+        #region GetAll
         [HttpGet]
         public IActionResult GetAll()
         {
             List<Product> objProductList = _unitOfWork.Product.GetAll(includeProperties: "Category").ToList();
             return Json(new { data = objProductList });
         }
+
+        #endregion
+
+        #region Delete
 
         [HttpDelete]
         public IActionResult Delete(int? id)
