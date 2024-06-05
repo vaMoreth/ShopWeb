@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Shop.DataAcess.Data;
 
@@ -11,9 +12,11 @@ using Shop.DataAcess.Data;
 namespace Shop.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240604061648_addCompanyTable")]
+    partial class addCompanyTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -300,38 +303,6 @@ namespace Shop.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Companies");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            City = "Network",
-                            Name = "Network",
-                            PhoneNumber = "123123123",
-                            PostalCode = "01-918",
-                            State = "Nt",
-                            StreetAdress = "123 Network st"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            City = "Dogjob",
-                            Name = "Dogjob",
-                            PhoneNumber = "321321321",
-                            PostalCode = "01-819",
-                            State = "Dj",
-                            StreetAdress = "123 Dogjob st"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            City = "Cathatch",
-                            Name = "Cathatch",
-                            PhoneNumber = "123321123",
-                            PostalCode = "01-819",
-                            State = "Ch",
-                            StreetAdress = "123 Cathatch st"
-                        });
                 });
 
             modelBuilder.Entity("Shop.Models.Product", b =>
