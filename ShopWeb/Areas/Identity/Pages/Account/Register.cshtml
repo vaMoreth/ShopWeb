@@ -40,11 +40,16 @@
                         <label asp-for="Input.ConfirmPassword" class="ms-2 text-muted">Confirm Password</label>
                         <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                     </div>
-                    @* <div class="form-floating mb-3">
-                    <select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class="form-select">
-                    <option disabled selected>- Select the Role -</option>
-                    </select>
-                    </div> *@
+                    <div class="form-floating mb-3 col-md-6">
+                        <input asp-for="Input.State" class="form-control" placeholder="State" />
+                        <label asp-for="Input.State" class="ms-2 text-muted">State</label>
+                        <span asp-validation-for="Input.State" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-3 col-md-6">
+                        <input asp-for="Input.PostalCode" class="form-control" placeholder="Postal Code" />
+                        <label asp-for="Input.PostalCode" class="ms-2 text-muted">Postal Code</label>
+                        <span asp-validation-for="Input.PostalCode" class="text-danger"></span>
+                    </div>
                     <div class="form-floating mb-3 col-md-6">
                         <input asp-for="Input.SteetAddress" class="form-control" placeholder="Steet Address" />
                         <label asp-for="Input.SteetAddress" class="ms-2 text-muted">Steet Address</label>
@@ -56,14 +61,14 @@
                         <span asp-validation-for="Input.City" class="text-danger"></span>
                     </div>
                     <div class="form-floating mb-3 col-md-6">
-                        <input asp-for="Input.State" class="form-control" placeholder="State" />
-                        <label asp-for="Input.State" class="ms-2 text-muted">State</label>
-                        <span asp-validation-for="Input.State" class="text-danger"></span>
+                        <select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class="form-select">
+                            <option disabled selected>- Select Role -</option>
+                        </select>
                     </div>
                     <div class="form-floating mb-3 col-md-6">
-                        <input asp-for="Input.PostalCode" class="form-control" placeholder="Postal Code" />
-                        <label asp-for="Input.PostalCode" class="ms-2 text-muted">Postal Code</label>
-                        <span asp-validation-for="Input.PostalCode" class="text-danger"></span>
+                        <select asp-for="Input.CompanyId" asp-items="@Model.Input.CompanyList" class="form-select">
+                            <option disabled selected>- Select Company -</option>
+                        </select>
                     </div>
                     <div class="col-12">
                         <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
