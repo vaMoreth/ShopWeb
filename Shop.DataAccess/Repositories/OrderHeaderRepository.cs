@@ -31,7 +31,9 @@ namespace Shop.DataAccess.Repositories
                 orderFromDb.OrderStatus = orderStatus;
 
                 if (!string.IsNullOrEmpty(paymentStatus))
+                {
                     orderFromDb.PaymentStatus = paymentStatus;
+                }
             }
         }
 
@@ -39,8 +41,10 @@ namespace Shop.DataAccess.Repositories
         {
             var orderFromDb = _db.OrderHeaders.FirstOrDefault(u => u.id == id);
 
-            if (!string.IsNullOrEmpty(paymentIntentId))
+            if (!string.IsNullOrEmpty(sessionId))
+            {
                 orderFromDb.SessionId = sessionId;
+            }
 
             if (!string.IsNullOrEmpty(paymentIntentId))
             {
