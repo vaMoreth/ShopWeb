@@ -5,6 +5,7 @@ using Shop.Models;
 
 namespace ShopWeb.Areas.Admin.Controllers
 {
+    [Area("admin")]
     public class OrderController : Controller
     {
 
