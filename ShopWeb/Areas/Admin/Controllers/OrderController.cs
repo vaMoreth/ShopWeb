@@ -6,6 +6,7 @@ using Shop.Models;
 using Shop.Models.ViewModels;
 using Shop.Utility;
 using Stripe;
+using Stripe.Checkout;
 using System.Diagnostics;
 using System.Security.Claims;
 
@@ -42,9 +43,9 @@ namespace ShopWeb.Areas.Admin.Controllers
         }
 
         #region UpdateOrderDetail
-        
+
         [HttpPost]
-        [Authorize(Roles =SD.Role_Admin+","+SD.Role_Employee)]
+        [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
         public IActionResult UpdateOrderDetail()
         {
             var orderHeaderFromDb = _unitOfWork.OrderHeader.Get(u => u.id == OrderVM.OrderHeader.id);
@@ -67,7 +68,7 @@ namespace ShopWeb.Areas.Admin.Controllers
 
             TempData["Success"] = "Order details updated successfully";
 
-            return RedirectToAction(nameof(Details), new {orderId = orderHeaderFromDb.id});
+            return RedirectToAction(nameof(Details), new { orderId = orderHeaderFromDb.id });
         }
 
         #endregion
@@ -101,9 +102,9 @@ namespace ShopWeb.Areas.Admin.Controllers
             orderHeader.OrderStatus = SD.StatusShipped;
             orderHeader.ShippingDate = DateTime.Now;
 
-            if(orderHeader.PaymentStatus == SD.PaymentStatusDelayedPayment)
+            if (orderHeader.PaymentStatus == SD.PaymentStatusDelayedPayment)
             {
-                orderHeader.PaymentDueDate =  DateOnly.FromDateTime(DateTime.Now.AddDays(30));
+                orderHeader.PaymentDueDate = DateOnly.FromDateTime(DateTime.Now.AddDays(30));
             }
 
             _unitOfWork.OrderHeader.Update(orderHeader);
@@ -112,6 +113,86 @@ namespace ShopWeb.Areas.Admin.Controllers
             TempData["Success"] = "Order shipped successfully";
 
             return RedirectToAction(nameof(Details), new { orderId = OrderVM.OrderHeader.id });
+        }
+
+        #endregion
+
+        #region DetailsPayNow
+
+        [ActionName("Details")]
+        [HttpPost]
+        public IActionResult DetailsPayNow()
+        {
+            OrderVM.OrderHeader = _unitOfWork.OrderHeader
+                .Get(u=>u.id == OrderVM.OrderHeader.id, includeProperties: "ApplicationUser");
+            OrderVM.OrderDetail = _unitOfWork.OrderDetail
+                .GetAll(u => u.OrderHeaderId == OrderVM.OrderHeader.id, includeProperties: "Product");
+
+            // strip logic
+
+            var domain = "https://localhost:7175/";
+
+            var options = new Stripe.Checkout.SessionCreateOptions
+            {
+                SuccessUrl = domain + $"admin/order/PaymentConfirmation?orderHeaderId={OrderVM.OrderHeader.id}",
+                CancelUrl = domain + $"admin/order/details?orderId={OrderVM.OrderHeader.id}",
+
+                LineItems = new List<Stripe.Checkout.SessionLineItemOptions>(),
+                Mode = "payment",
+            };
+
+            foreach (var item in OrderVM.OrderDetail)
+            {
+                var sessionLineItem = new SessionLineItemOptions
+                {
+                    PriceData = new SessionLineItemPriceDataOptions
+                    {
+                        UnitAmount = (long)(item.Price * 100),
+                        Currency = "usd",
+                        ProductData = new SessionLineItemPriceDataProductDataOptions
+                        {
+                            Name = item.Product.Title
+                        }
+                    },
+                    Quantity = item.Count
+                };
+                options.LineItems.Add(sessionLineItem);
+            }
+
+            var service = new Stripe.Checkout.SessionService();
+            Session session = service.Create(options);
+
+            _unitOfWork.OrderHeader.UpdateStripPaymentID(OrderVM.OrderHeader.id, session.Id, session.PaymentIntentId);
+            _unitOfWork.Save();
+
+            Response.Headers.Add("Location", session.Url);
+            return new StatusCodeResult(303);
+        }
+
+        #endregion
+
+        #region PaymentConfirmation
+
+        public IActionResult PaymentConfirmation(int orderHeaderId)
+        {
+            OrderHeader orderHeader = _unitOfWork.OrderHeader.Get(u => u.id == orderHeaderId);
+
+            if (orderHeader.PaymentStatus == SD.PaymentStatusDelayedPayment)
+            {
+                //order by company
+                var service = new SessionService();
+                Session session = service.Get(orderHeader.SessionId);
+
+                if (session.PaymentStatus.ToLower() == "paid")
+                {
+                    _unitOfWork.OrderHeader.UpdateStripPaymentID(orderHeaderId, session.Id, session.PaymentIntentId);
+                    _unitOfWork.OrderHeader.UpdateStatus(orderHeaderId, orderHeader.OrderStatus, SD.PaymentStatusApproved);
+                    _unitOfWork.Save();
+                }
+
+            }
+
+            return View(orderHeaderId);
         }
 
         #endregion
