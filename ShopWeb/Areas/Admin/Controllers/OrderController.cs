@@ -5,12 +5,14 @@ using Shop.DataAccess.Repositories.IRepository;
 using Shop.Models;
 using Shop.Models.ViewModels;
 using Shop.Utility;
+using Stripe;
 using System.Diagnostics;
 using System.Security.Claims;
 
 namespace ShopWeb.Areas.Admin.Controllers
 {
     [Area("admin")]
+    [Authorize]
     public class OrderController : Controller
     {
 
@@ -39,6 +41,8 @@ namespace ShopWeb.Areas.Admin.Controllers
             return View(OrderVM);
         }
 
+        #region UpdateOrderDetail
+        
         [HttpPost]
         [Authorize(Roles =SD.Role_Admin+","+SD.Role_Employee)]
         public IActionResult UpdateOrderDetail()
@@ -66,6 +70,87 @@ namespace ShopWeb.Areas.Admin.Controllers
             return RedirectToAction(nameof(Details), new {orderId = orderHeaderFromDb.id});
         }
 
+        #endregion
+
+        #region StartProcessing
+
+        [HttpPost]
+        [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
+        public IActionResult StartProcessing()
+        {
+            _unitOfWork.OrderHeader.UpdateStatus(OrderVM.OrderHeader.id, SD.StatusInProcess);
+            _unitOfWork.Save();
+
+            TempData["Success"] = "Order details updated successfully";
+
+            return RedirectToAction(nameof(Details), new { orderId = OrderVM.OrderHeader.id });
+        }
+
+        #endregion
+
+        #region ShipOrder
+
+        [HttpPost]
+        [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
+        public IActionResult ShipOrder()
+        {
+
+            var orderHeader = _unitOfWork.OrderHeader.Get(u => u.id == OrderVM.OrderHeader.id);
+            orderHeader.TrackingNumber = OrderVM.OrderHeader.TrackingNumber;
+            orderHeader.Carrier = OrderVM.OrderHeader.Carrier;
+            orderHeader.OrderStatus = SD.StatusShipped;
+            orderHeader.ShippingDate = DateTime.Now;
+
+            if(orderHeader.PaymentStatus == SD.PaymentStatusDelayedPayment)
+            {
+                orderHeader.PaymentDueDate =  DateOnly.FromDateTime(DateTime.Now.AddDays(30));
+            }
+
+            _unitOfWork.OrderHeader.Update(orderHeader);
+            _unitOfWork.Save();
+
+            TempData["Success"] = "Order shipped successfully";
+
+            return RedirectToAction(nameof(Details), new { orderId = OrderVM.OrderHeader.id });
+        }
+
+        #endregion
+
+        #region CancelOrder
+
+        [HttpPost]
+        [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
+        public IActionResult CancelOrder()
+        {
+
+            var orderHeader = _unitOfWork.OrderHeader.Get(u => u.id == OrderVM.OrderHeader.id);
+
+            if (orderHeader.PaymentStatus == SD.PaymentStatusApproved)
+            {
+                var options = new RefundCreateOptions
+                {
+                    Reason = RefundReasons.RequestedByCustomer,
+                    PaymentIntent = orderHeader.PaymentIntentId,
+                };
+
+                var service = new RefundService();
+                Refund refund = service.Create(options);
+
+                _unitOfWork.OrderHeader.UpdateStatus(orderHeader.id, SD.StatusCancelled, SD.StatusRefunded);
+            }
+            else
+            {
+                _unitOfWork.OrderHeader.UpdateStatus(orderHeader.id, SD.StatusCancelled, SD.StatusCancelled);
+            }
+
+
+            _unitOfWork.Save();
+            TempData["Success"] = "Order cancelled successfully";
+
+            return RedirectToAction(nameof(Details), new { orderId = OrderVM.OrderHeader.id });
+        }
+
+        #endregion
 
         #region GetAll
 
