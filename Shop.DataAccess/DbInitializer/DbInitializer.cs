@@ -52,7 +52,7 @@ namespace Shop.DataAccess.DbInitializer
                 // if roles are not created, then we will create admin user as well
                 _userManager.CreateAsync(new ApplicationUser
                 {
-                    UserName = "admin",
+                    UserName = "admin@gmail.com",
                     Email = "admin@gmail.com",
                     Name = "Vasyl Vintoniak",
                     PhoneNumber = "111222333",
