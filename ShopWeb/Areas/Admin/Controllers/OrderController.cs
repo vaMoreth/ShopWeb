@@ -130,7 +130,7 @@ namespace ShopWeb.Areas.Admin.Controllers
 
             // strip logic
 
-            var domain = "https://localhost:7175/";
+            var domain = Request.Scheme + "://" + Request.Host.Value + "/";
 
             var options = new Stripe.Checkout.SessionCreateOptions
             {
